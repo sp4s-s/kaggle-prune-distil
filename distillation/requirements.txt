@@ -1,0 +1,20 @@
+# Core dependencies
+torch==2.2.2
+transformers==4.41.1
+datasets==2.19.1
+accelerate==0.30.1
+huggingface_hub==0.23.3
+PyYAML==6.0.1
+
+# WandB for logging [Optional]
+wandb==0.17.0
+
+# GaLore optimizer
+galore-torch==0.0.8
+
+# TRL (latest from GitHub)
+git+https://github.com/huggingface/trl.git@main
+
+# Optional (safety)
+scipy==1.13.1
+tqdm==4.66.4

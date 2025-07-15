@@ -1,0 +1,75 @@
+project_name: smollm-distill
+dataset:
+  name: Trellis/smol_corpus-2percent
+  total_train_samples: 1000000 # 2M rows for -0.4% of the pre-training data. 4582000 is 2% of total data
+  eval_samples: 1000
+  subsets:
+    - name: "cosmopedia"
+      split: "train"
+    - name: "fineweb_chunk_0"
+      split: "train"
+    - name: "fineweb_chunk_1"
+      split: "train"
+    - name: "fineweb_chunk_2"
+      split: "train"
+    - name: "fineweb_chunk_3"
+      split: "train"
+    - name: "fineweb_chunk_4"
+      split: "train"
+    - name: "fineweb_chunk_5"
+      split: "train"
+    - name: "fineweb_chunk_6"
+      split: "train"
+    - name: "fineweb_chunk_7"
+      split: "train"
+models:
+  # Trelis/SmolLM-135M-Instruct-layer-pruned-90M-raw
+  teacher: "HuggingFaceTB/SmolLM-135M"
+  student: "Trellis/SmolLM-135M-layer-pruned-90M-raw"
+  # teacher: "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
+  # student: "meta-llama/Llama-3.2-1B"
+  
+  
+tokenizer:
+  max_length: 2048
+  chat_template: "{% for message in messages %}{{ '<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}"
+training:
+  output_dir: "./results"
+  per_device_train_batch_size: 16
+  per_device_eval_batch_size: 16
+  gradient_accumulation_steps: 4
+  save_strategy: "steps"
+  eval_strategy: "steps"
+  load_best_model_at_end: false
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  learning_rate: 0.001
+  weight_decay: 0.05
+  warmup_ratio: 0.01 # This will be used to calculate warmup steps
+  resume_from_checkpoint: null
+  fp16: false
+  report_to: "tensorboard"
+  gradient_checkpointing: false # this technically slows things down, although allows a higher batch.
+  gradient_checkpointing_kwargs: {"use_reentrant": True}
+  hub_model_id: "Pingsz/distilled-llama-1B"
+training_aux:
+  save_steps_fraction: 0.2 # This will be multiplied by max_steps in the script
+  logging_steps_fraction: 0.001 # This will be multiplied by max_steps in the script
+  eval_steps_fraction: 0.2 # This will be multiplied by max_steps in the script
+  num_train_epochs: 1
+  annealing_phase_fraction: 0.1
+distillation:
+  temperature: 2.0
+  alpha: 1.0
+  forward_kl_weight: 1.0
+  reverse_kl_weight: 0
+  jsd_weight: 0
+  akl_weight: 0
+  dpkd_weight: 0
+model_config:
+  use_flash_attention: true
+wandb:
+  wandb_project: "distilling_smollm_new"
+  wandb_entity: "sp4ss"
+huggingface:
+  push_to_hub: true
