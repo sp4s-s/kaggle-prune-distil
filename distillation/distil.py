@@ -356,3 +356,6 @@ def main(config_path):
     trainer.save_model(config['training']['output_dir'])
 
     trainer.push_to_hub()
+
+if __name__ == "__main__":
+    main()
