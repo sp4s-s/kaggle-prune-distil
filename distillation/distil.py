@@ -358,4 +358,4 @@ def main(config_path):
     trainer.push_to_hub()
 
 if __name__ == "__main__":
-    main()
+    main("config_v0.yaml")
